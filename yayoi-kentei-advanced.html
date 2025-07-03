@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>やよい検定 Advanced - やよたんマスターへの道</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #ffeef4 0%, #fff0f8 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            color: #d63384;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .start-screen, .quiz-screen, .result-screen {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #d63384;
+        }
+        
+        .quiz-screen, .result-screen {
+            display: none;
+        }
+        
+        .question-counter {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .option:hover {
+            border-color: #d63384;
+            background: #ffeef4;
+        }
+        
+        .option.selected {
+            border-color: #d63384;
+            background: #ffeef4;
+        }
+        
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        button {
+            background: #d63384;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        button:hover {
+            background: #b02954;
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #d63384, #ff6b9d);
+            transition: width 0.3s;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 3em;
+            color: #d63384;
+            margin: 20px 0;
+        }
+        
+        .rank {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .rank.master {
+            background: linear-gradient(135deg, #ffd700, #ffed4a);
+            color: #b8860b;
+        }
+        
+        .rank.expert {
+            background: linear-gradient(135deg, #c0c0c0, #e6e6e6);
+            color: #666;
+        }
+        
+        .rank.beginner {
+            background: linear-gradient(135deg, #cd7f32, #d4914a);
+            color: #8b4513;
+        }
+        
+        .rank.novice {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #6c757d;
+        }
+        
+        .explanation {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #0056b3;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .share-button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .x-twitter {
+            background: #000000;
+        }
+        
+        .line {
+            background: #00c300;
+        }
+        
+        .advanced-features {
+            background: #e7f3ff;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .advanced-features h3 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        
+        .advanced-features ul {
+            color: #0056b3;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 やよい検定 Advanced</h1>
+            <p class="subtitle">あなたは真のやよたんマスターになれるか？</p>
+        </header>
+        
+        <!-- スタート画面 -->
+        <div class="start-screen" id="startScreen">
+            <div class="advanced-features">
+                <h3>🚀 Advanced版の新機能</h3>
+                <ul>
+                    <li>問題数が20問に増加！</li>
+                    <li>毎回ランダムに10問を出題</li>
+                    <li>選択肢の順序もランダムシャッフル</li>
+                    <li>より多彩な問題でやよたん知識を試せます</li>
+                </ul>
+            </div>
+            <h2 style="text-align: center; color: #d63384; margin-bottom: 20px;">検定について</h2>
+            <p style="margin-bottom: 15px;">🌸 やよたんに関する問題から10問をランダム出題！</p>
+            <p style="margin-bottom: 15px;">🎯 正解数に応じてランクが決まります</p>
+            <p style="margin-bottom: 15px;">🔀 選択肢の順序も毎回変わります</p>
+            <p style="margin-bottom: 30px;">💕 制限時間はないので、ゆっくり考えてね</p>
+            <button onclick="startQuiz()">検定スタート！</button>
+        </div>
+        
+        <!-- クイズ画面 -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="question-counter" id="questionCounter"></div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <button id="nextButton" onclick="nextQuestion()" disabled>次の問題</button>
+            <div class="explanation" id="explanation" style="display: none;"></div>
+        </div>
+        
+        <!-- 結果画面 -->
+        <div class="result-screen" id="resultScreen">
+            <h2 style="text-align: center; color: #d63384; margin-bottom: 20px;">検定結果</h2>
+            <div class="score" id="finalScore"></div>
+            <div class="rank" id="rank"></div>
+            <p style="text-align: center; margin: 20px 0;" id="resultMessage"></p>
+            <div class="share-buttons">
+                <a href="#" class="share-button x-twitter" id="xShare" target="_blank">𝕏 (Twitter)でシェア</a>
+                <a href="#" class="share-button line" id="lineShare" target="_blank">LINEでシェア</a>
+            </div>
+            <button onclick="restartQuiz()" style="margin-top: 20px;">もう一度挑戦</button>
+        </div>
+    </div>
+    
+    <script>
+        const allQuestions = [
+            {
+                question: "やよたんの誕生日はいつ？",
+                options: ["1985年3月13日", "1986年3月13日", "1985年3月31日", "1984年3月13日"],
+                correct: 0,
+                explanation: "やよたんは1985年3月13日生まれです！"
+            },
+            {
+                question: "やよたんが好きなアイスは？",
+                options: ["ハーゲンダッツ", "パルムの桃味", "31アイスクリーム", "MOW"],
+                correct: 1,
+                explanation: "やよたんはパルムの桃味を買いだめするほど大好きで、再販を心待ちにしています！"
+            },
+            {
+                question: "やよたんが働いているお店の名前は？",
+                options: ["アプレシオ", "はたはた", "もなみ", "スシロー"],
+                correct: 1,
+                explanation: "やよたんは「はたはた」というお魚が美味しいお店でバイトしています！"
+            },
+            {
+                question: "やよたんが好きな回転寿司チェーンは？",
+                options: ["はま寿司", "くら寿司", "スシロー", "かっぱ寿司"],
+                correct: 2,
+                explanation: "やよたんは刺身が好きで、回転寿司ではスシローが一番好きです！"
+            },
+            {
+                question: "やよたんが高校時代に呼ばれていたあだ名は？",
+                options: ["やよピー", "やよたん", "ミラクル", "弥生ちゃん"],
+                correct: 0,
+                explanation: "やよたんは高校の時に「やよピー」と呼ばれていました！タコピーの真似もします。"
+            },
+            {
+                question: "やよたんが特に好きな食べ物のジャンルは？",
+                options: ["肉料理", "麺類", "デザート", "和食"],
+                correct: 1,
+                explanation: "やよたんは麺類を好んで食べます！"
+            },
+            {
+                question: "やよたんがよく食べるパンは？",
+                options: ["クロワッサン", "食パン", "ベーコンエピ", "メロンパン"],
+                correct: 2,
+                explanation: "やよたんは時間がない時でもベーコンエピだけは食べようとします！パンも大好きです。"
+            },
+            {
+                question: "やよたんが好きなフルーツは？",
+                options: ["りんご", "メロン", "バナナ", "オレンジ"],
+                correct: 1,
+                explanation: "やよたんはメロンが好きで、メロンアイスをよく食べます！"
+            },
+            {
+                question: "やよたんが担当を持っているブランドは？",
+                options: ["ユニクロ", "ZARA", "ビームス", "H&M"],
+                correct: 2,
+                explanation: "やよたんはビームスに担当がいる太客です！"
+            },
+            {
+                question: "やよたんの得意技は？",
+                options: ["カラオケ", "ダンス", "顔ハメ", "料理"],
+                correct: 2,
+                explanation: "やよたんは顔ハメのプロです！"
+            },
+            {
+                question: "やよたんが急に改名した新しい名前は？",
+                options: ["Miracle弥生", "Super弥生", "Amazing弥生", "Wonder弥生"],
+                correct: 0,
+                explanation: "やよたんが急に改名してMiracle弥生になりました！"
+            },
+            {
+                question: "やよたんが好きなフルーツで、アイスもよく食べるのは？",
+                options: ["いちご", "メロン", "ぶどう", "桃"],
+                correct: 1,
+                explanation: "やよたんはメロンが好きで、メロンアイスをよく食べます！いちごも大好きです。"
+            },
+            {
+                question: "やよたんがこたつについて言っていることは？",
+                options: ["夏でも使いたい", "冬はこたつを買う", "こたつは邪魔", "こたつより暖房"],
+                correct: 1,
+                explanation: "やよたんがこたつに入っているところが見たいので、冬にはこたつを買うと言われています！"
+            },
+            {
+                question: "やよたんの男性の服装の好みは？",
+                options: ["派手なデザイン", "無地のTシャツ", "ブランド物", "スーツ"],
+                correct: 1,
+                explanation: "やよたんは男の服装はシンプルな無地のTシャツが好みのようです！"
+            },
+            {
+                question: "やよたんがよく行きつけのタコス屋さんの名前は？",
+                options: ["アプレシオ", "エルトリート", "タコベル", "メキシカン"],
+                correct: 0,
+                explanation: "やよたん行きつけのタコスやさん「アプレシオ」。オーナーはなおさん（日本人）です！"
+            },
+            {
+                question: "初デートで行ったお店の名前は？",
+                options: ["もなみ", "はたはた", "アプレシオ", "スシロー"],
+                correct: 0,
+                explanation: "大雨の中の初デートでハンバーグを食べに行った「もなみ」で奇跡を起こしました！"
+            },
+            {
+                question: "初デートの日はどんな天気だった？",
+                options: ["晴れ", "曇り", "大雨", "雪"],
+                correct: 2,
+                explanation: "2025年6月14日の初デートは大雨の中でした！"
+            },
+            {
+                question: "やよたんがスパムを開ける時に使う道具を何と呼んでいる？",
+                options: ["心の鍵", "魔法の鍵", "愛の鍵", "幸せの鍵"],
+                correct: 0,
+                explanation: "やよたんはスパムの鍵みたいなのを「心の鍵」と呼んでいました！"
+            },
+            {
+                question: "やよたんがタコピーの真似をする時の決めポーズで言う言葉は？",
+                options: ["おはなしがハッピーを生むんだっピ", "みんなでハッピーになるっピ", "愛がハッピーを作るっピ", "笑顔がハッピーの素だっピ"],
+                correct: 0,
+                explanation: "やよたんがタコピーの真似をする時の決めポーズは「おはなしがハッピーを生むんだっピ」です！"
+            },
+            {
+                question: "映画デートで見た実写版の映画は？",
+                options: ["リロ&スティッチ", "アラジン", "美女と野獣", "ライオンキング"],
+                correct: 0,
+                explanation: "2025年6月15日の映画デートで実写版のリロ&スティッチを見ました！"
+            }
+        ];
+        
+        let selectedQuestions = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedOption = null;
+        let shuffledOptions = [];
+        let correctAnswerIndex = 0;
+        
+        // Fisher-Yates シャッフルアルゴリズム
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        // ランダムに10問選択
+        function selectRandomQuestions() {
+            const shuffled = shuffleArray(allQuestions);
+            selectedQuestions = shuffled.slice(0, 10);
+        }
+        
+        // 選択肢をシャッフルして正解のインデックスを更新
+        function shuffleOptions(question) {
+            const options = [...question.options];
+            const correctOption = options[question.correct];
+            
+            const shuffled = shuffleArray(options);
+            const newCorrectIndex = shuffled.indexOf(correctOption);
+            
+            return {
+                shuffledOptions: shuffled,
+                correctIndex: newCorrectIndex
+            };
+        }
+        
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            currentQuestion = 0;
+            score = 0;
+            selectRandomQuestions();
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const q = selectedQuestions[currentQuestion];
+            const { shuffledOptions: options, correctIndex } = shuffleOptions(q);
+            shuffledOptions = options;
+            correctAnswerIndex = correctIndex;
+            
+            document.getElementById('questionCounter').textContent = `問題 ${currentQuestion + 1} / ${selectedQuestions.length}`;
+            document.getElementById('question').textContent = q.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = () => selectOption(index, optionDiv);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('nextButton').disabled = true;
+            document.getElementById('explanation').style.display = 'none';
+            selectedOption = null;
+            
+            // プログレスバー更新
+            const progress = ((currentQuestion) / selectedQuestions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+        
+        function selectOption(index, element) {
+            // 既に選択済みの場合は何もしない
+            if (selectedOption !== null) return;
+            
+            selectedOption = index;
+            const q = selectedQuestions[currentQuestion];
+            
+            // すべてのオプションを無効化
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            // 正解・不正解の表示
+            options.forEach((opt, i) => {
+                if (i === correctAnswerIndex) {
+                    opt.classList.add('correct');
+                } else if (i === index && index !== correctAnswerIndex) {
+                    opt.classList.add('incorrect');
+                }
+            });
+            
+            // スコア更新
+            if (index === correctAnswerIndex) {
+                score++;
+            }
+            
+            // 解説表示
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').style.display = 'block';
+            
+            // 次へボタン有効化
+            document.getElementById('nextButton').disabled = false;
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < selectedQuestions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+        
+        function showResult() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            
+            document.getElementById('finalScore').textContent = `${score} / ${selectedQuestions.length}`;
+            
+            let rankText, rankClass, message;
+            
+            if (score >= 9) {
+                rankText = "🏆 やよたんマスター";
+                rankClass = "master";
+                message = "完璧です！あなたは真のやよたんマスターです！";
+            } else if (score >= 7) {
+                rankText = "🥈 やよたんエキスパート";
+                rankClass = "expert";
+                message = "素晴らしい！やよたんのことをよく知っていますね！";
+            } else if (score >= 5) {
+                rankText = "🥉 やよたんビギナー";
+                rankClass = "beginner";
+                message = "まずまずです！もう少し勉強すればマスターに！";
+            } else {
+                rankText = "📚 やよたん見習い";
+                rankClass = "novice";
+                message = "まだまだです！やよたんのことをもっと知りましょう！";
+            }
+            
+            const rankElement = document.getElementById('rank');
+            rankElement.textContent = rankText;
+            rankElement.className = `rank ${rankClass}`;
+            
+            document.getElementById('resultMessage').textContent = message;
+            
+            // シェアボタンの設定
+            const shareText = `やよい検定 Advanced版で${score}/${selectedQuestions.length}点を取りました！ランクは「${rankText}」です！ #やよい検定`;
+            const url = window.location.href;
+            
+            document.getElementById('xShare').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
+            document.getElementById('lineShare').href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`;
+        }
+        
+        function restartQuiz() {
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+            
+            // オプションのスタイルをリセット
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'auto';
+                opt.classList.remove('correct', 'incorrect', 'selected');
+            });
+        }
+    </script>
+</body>
+</html>
