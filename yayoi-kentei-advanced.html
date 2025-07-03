@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>やよい検定 Advanced - やよたんマスターへの道</title>
+    <title>スーパーやよい検定 - やよたんマスターへの道</title>
     <style>
         * {
             margin: 0;
@@ -237,21 +237,12 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎯 やよい検定 Advanced</h1>
+            <h1>🎯 スーパーやよい検定</h1>
             <p class="subtitle">あなたは真のやよたんマスターになれるか？</p>
         </header>
         
         <!-- スタート画面 -->
         <div class="start-screen" id="startScreen">
-            <div class="advanced-features">
-                <h3>🚀 Advanced版の新機能</h3>
-                <ul>
-                    <li>問題数が20問に増加！</li>
-                    <li>毎回ランダムに10問を出題</li>
-                    <li>選択肢の順序もランダムシャッフル</li>
-                    <li>より多彩な問題でやよたん知識を試せます</li>
-                </ul>
-            </div>
             <h2 style="text-align: center; color: #d63384; margin-bottom: 20px;">検定について</h2>
             <p style="margin-bottom: 15px;">🌸 やよたんに関する問題から10問をランダム出題！</p>
             <p style="margin-bottom: 15px;">🎯 正解数に応じてランクが決まります</p>
@@ -561,7 +552,7 @@
             document.getElementById('resultMessage').textContent = message;
             
             // シェアボタンの設定
-            const shareText = `やよい検定 Advanced版で${score}/${selectedQuestions.length}点を取りました！ランクは「${rankText}」です！ #やよい検定`;
+            const shareText = `スーパーやよい検定で${score}/${selectedQuestions.length}点を取りました！ランクは「${rankText}」です！ #やよい検定`;
             const url = window.location.href;
             
             document.getElementById('xShare').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
