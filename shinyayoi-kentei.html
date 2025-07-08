@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真・やよい検定（極）- 究極のやよたんマスターへ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #fff;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0b1a 25%, #2d1b2d 50%, #1a0b1a 75%, #0a0a0a 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            color: #ff69b4;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.8), 0 0 40px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(45deg, #ff69b4, #da70d6, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #da70d6;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(218, 112, 214, 0.8);
+            background: linear-gradient(45deg, #da70d6, #ff69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .start-screen, .quiz-screen, .result-screen, .game-over-screen {
+            background: linear-gradient(135deg, rgba(26, 11, 26, 0.95), rgba(45, 27, 45, 0.9), rgba(26, 11, 26, 0.95));
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 15px 50px rgba(255, 105, 180, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #ff69b4, #da70d6, #ffd700, #ff69b4) 1;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quiz-screen, .result-screen, .game-over-screen {
+            display: none;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #8b0000, #ff1493, #8b0000);
+            color: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            animation: devilPulse 2s infinite;
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 20, 147, 0.8);
+        }
+        
+        @keyframes devilPulse {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 30px rgba(255, 20, 147, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                transform: scale(1.02);
+                box-shadow: 0 0 40px rgba(255, 20, 147, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.2);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 0 30px rgba(255, 20, 147, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        .question-counter {
+            text-align: center;
+            color: #da70d6;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(218, 112, 214, 0.8);
+        }
+        
+        .question {
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            color: #fff;
+            line-height: 1.5;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .option {
+            background: linear-gradient(135deg, rgba(45, 27, 45, 0.8), rgba(26, 11, 26, 0.9));
+            border: 2px solid rgba(218, 112, 214, 0.4);
+            border-radius: 18px;
+            padding: 22px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            font-size: 1.1em;
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(218, 112, 214, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+        }
+        
+        .option:hover {
+            border-color: #ff69b4;
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.3), rgba(218, 112, 214, 0.4));
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        }
+        
+        .option.selected {
+            border-color: #ff69b4;
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.4), rgba(218, 112, 214, 0.5));
+            box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
+        }
+        
+        .option.correct {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 223, 0, 0.4));
+            animation: correctFlash 0.5s ease-in-out;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+        
+        .option.incorrect {
+            border-color: #ff1493;
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.3), rgba(139, 0, 0, 0.4));
+            animation: incorrectShake 0.5s ease-in-out;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 20, 147, 0.8);
+        }
+        
+        @keyframes correctFlash {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ff69b4, #da70d6, #ffd700);
+            color: #000;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.4s;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #da70d6, #ff69b4, #ffd700);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 105, 180, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        
+        button:disabled {
+            background: linear-gradient(135deg, #4a4a4a, #2d2d2d);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+        
+        .lives-counter {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #ff4757;
+            font-weight: bold;
+        }
+        
+        .lives-heart {
+            color: #ff4757;
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+        
+        .lives-heart.lost {
+            color: #ccc;
+        }
+        
+        .explanation {
+            background: linear-gradient(135deg, rgba(45, 27, 45, 0.8), rgba(75, 0, 130, 0.3));
+            border: 2px solid rgba(218, 112, 214, 0.6);
+            border-radius: 15px;
+            padding: 22px;
+            margin-top: 20px;
+            font-size: 1em;
+            color: #da70d6;
+            line-height: 1.6;
+            box-shadow: 0 5px 20px rgba(218, 112, 214, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            text-shadow: 0 0 8px rgba(218, 112, 214, 0.5);
+        }
+        
+        .game-over-screen {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(255, 20, 147, 0.9), rgba(139, 0, 0, 0.95));
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(255, 20, 147, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .game-over-screen h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 20, 147, 0.8), 0 0 50px rgba(255, 20, 147, 0.4);
+            background: linear-gradient(45deg, #ff1493, #ffd700, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-over-message {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .yayoi-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ff69b4, #da70d6, #ffd700) 1;
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5), 0 0 20px rgba(218, 112, 214, 0.4);
+            animation: iconGlow 2s infinite;
+        }
+        
+        .floating-icon {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 2s ease-out forwards;
+            z-index: 1000;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+        
+        .perfect-clear {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 237, 74, 0.3), rgba(255, 215, 0, 0.2));
+            color: #ffd700;
+            text-align: center;
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            animation: devilGoldGlow 2s infinite;
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        
+        @keyframes devilGoldGlow {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 105, 180, 0.3); 
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(255, 215, 0, 0.9), 0 0 70px rgba(255, 105, 180, 0.5); 
+            }
+        }
+        
+        
+        .background-stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(45deg, #ff69b4, #da70d6, #ffd700);
+            border-radius: 50%;
+            animation: devilTwinkle 3s infinite;
+            box-shadow: 0 0 6px currentColor;
+        }
+        
+        @keyframes devilTwinkle {
+            0%, 100% { 
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            33% { 
+                opacity: 1;
+                transform: scale(1.3);
+                filter: hue-rotate(60deg);
+            }
+            66% { 
+                opacity: 0.8;
+                transform: scale(0.8);
+                filter: hue-rotate(120deg);
+            }
+        }
+        
+        .sync-rate {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .sync-rate-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .sync-message {
+            font-size: 1.2em;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .perfect-sync-rate {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4a);
+            border-radius: 15px;
+            border: 3px solid #b8860b;
+            animation: syncGlow 2s infinite;
+        }
+        
+        .perfect-sync-rate .sync-rate-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #b8860b;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .perfect-sync-rate .sync-message {
+            font-size: 1.3em;
+            color: #8b4513;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes syncGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 50px rgba(255, 105, 180, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.9), 0 0 70px rgba(255, 105, 180, 0.5); }
+        }
+        
+        @keyframes iconGlow {
+            0%, 100% { 
+                box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5), 0 0 20px rgba(218, 112, 214, 0.4);
+                filter: hue-rotate(0deg);
+            }
+            50% { 
+                box-shadow: 0 8px 35px rgba(255, 105, 180, 0.8), 0 0 30px rgba(218, 112, 214, 0.6);
+                filter: hue-rotate(30deg);
+            }
+        }
+        
+        .victory-video-container {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(45, 27, 45, 0.8);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 105, 180, 0.6);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        #victoryVideo {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 15px;
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ff69b4, #da70d6, #ffd700, #ff69b4) 1;
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5), 0 0 20px rgba(218, 112, 214, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        #victoryVideo:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 35px rgba(255, 105, 180, 0.7), 0 0 30px rgba(218, 112, 214, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-stars" id="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1>⚡ 真・やよい検定（極）<img src="yayoi_icon.png" alt="やよたん" class="yayoi-icon"></h1>
+            <p class="subtitle">究極のやよたんマスターへの道 - 一問でも間違えたら即終了</p>
+        </header>
+        
+        <!-- スタート画面 -->
+        <div class="start-screen" id="startScreen">
+            <div class="warning-box">
+                ⚠️ 警告：一問でも間違えたらその時点で終了します ⚠️
+            </div>
+            <h2 style="text-align: center; color: #ff6b9d; margin-bottom: 20px;">真・やよい検定（極）について</h2>
+            <p style="margin-bottom: 15px;">🔥 やよたんに関する18問の超難問に挑戦！</p>
+            <p style="margin-bottom: 15px;">⚡ 一問でも間違えたら即ゲームオーバー</p>
+            <p style="margin-bottom: 15px;">🏆 全問正解者のみが「真のやよたんマスター」の称号を得る</p>
+            <p style="margin-bottom: 30px;">💀 制限時間なし、されど油断は禁物...</p>
+            <p style="text-align: center; font-size: 1.2em; color: #ff4757; font-weight: bold; margin-bottom: 20px;">あなたに真のやよたんマスターになる覚悟はありますか？</p>
+            <button onclick="startQuiz()">覚悟を決めて挑戦する</button>
+        </div>
+        
+        <!-- クイズ画面 -->
+        <div class="quiz-screen" id="quizScreen">
+            <div class="question-counter" id="questionCounter"></div>
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <button id="nextButton" onclick="nextQuestion()" disabled>次の問題へ</button>
+            <div class="explanation" id="explanation" style="display: none;"></div>
+        </div>
+        
+        <!-- ゲームオーバー画面 -->
+        <div class="game-over-screen" id="gameOverScreen">
+            <h2>💥 GAME OVER 💥</h2>
+            <div class="game-over-message" id="gameOverMessage"></div>
+            <div class="sync-rate" id="syncRate"></div>
+            <button onclick="restartQuiz()" style="background: white; color: #ff4757;">再挑戦する</button>
+        </div>
+        
+        <!-- 結果画面（完全クリア時のみ） -->
+        <div class="result-screen" id="resultScreen">
+            <div class="perfect-clear">
+                <h2>🏆 完全制覇！真のやよたんマスター 🏆</h2>
+                <p>全18問を完璧に答えました！</p>
+            </div>
+            <div class="perfect-sync-rate">
+                <div class="sync-rate-display">やよいシンクロ率: 100%</div>
+                <div class="sync-message">完全同調達成！あなたとやよたんは一心同体です！</div>
+            </div>
+            <div class="victory-video-container">
+                <video id="victoryVideo" loop muted>
+                    <source src="yayoi_movie.mp4" type="video/mp4">
+                    <source src="yayoi_movie.webm" type="video/webm">
+                    <source src="yayoi_movie.mov" type="video/quicktime">
+                    お使いのブラウザは動画再生に対応していません。
+                </video>
+            </div>
+            <p style="text-align: center; font-size: 1.3em; margin: 20px 0;">あなたこそが真のやよたんマスターです！</p>
+            <button onclick="restartQuiz()" style="margin-top: 20px;">もう一度挑戦</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                question: "やよたんの正確な誕生日は？",
+                options: ["1985年3月13日", "1985年3月31日", "1986年3月13日", "1985年3月30日"],
+                correct: 0,
+                explanation: "やよたんは1985年3月13日生まれです！似たような日付に惑わされましたか？"
+            },
+            {
+                question: "パルムの桃味について、正しい商品名は？",
+                options: ["パルム 白桃", "パルムジェラート 白桃", "パルム桃味", "パルム ピーチ"],
+                correct: 1,
+                explanation: "正式名称は「パルムジェラート 白桃」で、2023年6月12日から期間限定発売されました！"
+            },
+            {
+                question: "やよたんが働く「はたはた」で働いているお友達の名前は？",
+                options: ["ナホさん", "ナオさん", "ナミさん", "ナツさん"],
+                correct: 0,
+                explanation: "はたはたで働いているお友達はナホさんです！オーナーは福井さん。"
+            },
+            {
+                question: "やよたんの改名後の新しい名前は？",
+                options: ["Super弥生", "Miracle弥生", "Amazing弥生", "Wonder弥生"],
+                correct: 1,
+                explanation: "やよたんは急に改名してMiracle弥生になりました！"
+            },
+            {
+                question: "やよたんが初めて作ってくれた料理の正確な名前は？",
+                options: ["豚しゃぶサラダ", "豚しゃぶとなすのうまいやつ", "豚肉となすの和え物", "豚しゃぶ茄子"],
+                correct: 1,
+                explanation: "「豚しゃぶとなすのうまいやつ」という可愛らしいネーミングでした！ポン酢と大根おろしでさっぱり。"
+            },
+            {
+                question: "ドラマ「ホタルノヒカリ」が放送された正確な年は？",
+                options: ["2006年", "2007年", "2008年", "2009年"],
+                correct: 1,
+                explanation: "「ホタルノヒカリ」は2007年に日本テレビ系列で放送されました！続編は2010年。"
+            },
+            {
+                question: "やよたんの妹さんのアレルギーは？",
+                options: ["エビアレルギー", "ナッツアレルギー", "小麦アレルギー", "卵アレルギー"],
+                correct: 1,
+                explanation: "やよたんの妹さんはナッツアレルギー。やよたん自身はエビアレルギーと言っていたような？"
+            },
+            {
+                question: "やよたんの名付け親であるアズさんが働いているお店は？",
+                options: ["はたはた", "アプレシオ", "もなみ", "スシロー"],
+                correct: 1,
+                explanation: "やよたんと最初に呼び出したアズさんはアプレシオで働いています！"
+            },
+            {
+                question: "野田・福島について、正しい説明は？",
+                options: ["高級住宅街", "道端にジャガイモが落ちている都会の下町", "新興住宅地", "商業地区"],
+                correct: 1,
+                explanation: "やよたんのホームタウン野田・福島は、道端にジャガイモが落ちている都会の下町です！"
+            },
+            {
+                question: "やよたんが干物女として新聞紙で寝るのが夢な理由として正しいのは？",
+                options: ["節約のため", "目指しているライフスタイル", "環境に優しいから", "暖かいから"],
+                correct: 1,
+                explanation: "やよたんが目指している干物女のライフスタイルです！でも実際は丁寧な暮らしをしているのが不思議。"
+            },
+            {
+                question: "アンパンマンキャラクターで、やよたんが一番好きなコキンちゃんについて正しいのは？",
+                options: ["ドキンちゃんの妹", "バイキンマンの妹", "青いキャラクター", "誰だかわからない"],
+                correct: 3,
+                explanation: "記録には「コキンちゃん... 誰だろう...。」とあります。謎のキャラクターですね！"
+            },
+            {
+                question: "やよたんが好きな花と、その花でしたいことの組み合わせで正しいのは？",
+                options: ["桜・お花見", "ひまわり・プロポーズされたい", "薔薇・プレゼント", "菊・鑑賞"],
+                correct: 1,
+                explanation: "やよたんの好きな花はひまわりで、ひまわり畑でプロポーズされたいそうです！"
+            },
+            {
+                question: "やよたんがビームスで持っている特別な関係は？",
+                options: ["VIP会員", "担当がいる", "割引券を持っている", "友達が働いている"],
+                correct: 1,
+                explanation: "やよたんはビームスに担当がいる太客です！"
+            },
+            {
+                question: "やよたんの顔の特技について正しいのは？",
+                options: ["表情豊か", "顔ハメのプロ", "メイクが上手", "笑顔が素敵"],
+                correct: 1,
+                explanation: "やよたんは顔ハメのプロです！完璧にハマります。"
+            },
+            {
+                question: "やよたんの声の特徴で最も正確な説明は？",
+                options: ["普段小声だが突然大声が出る", "いつも大声", "歌声が美しい", "早口"],
+                correct: 0,
+                explanation: "やよたんは普段小声だけど、何かあった時に突然大声が出ます。本人に自覚はあるけど制御できないっぽい。"
+            },
+            {
+                question: "2025年6月28日の「はたはたの巻」で、やよたんが食べさせてくれた中で特においしかったものは？",
+                options: ["お刺身", "刺身と焼き魚", "煮魚", "天ぷら"],
+                correct: 1,
+                explanation: "お刺身とか色々食べさせてくれましたが、特に刺身と焼き魚がおいしかったそうです！"
+            },
+            {
+                question: "スパムの開け方を教える時、やよたんが「心の鍵」と呼んだものは？",
+                options: ["缶切り", "鍵みたいなもの", "専用オープナー", "タブ"],
+                correct: 1,
+                explanation: "スパムの鍵みたいなのを、やよたんは「心の鍵」と呼んでいました！"
+            },
+            {
+                question: "やよたんのタコピー真似の決めポーズの正確なセリフは？",
+                options: ["おはなしがハッピーを生むんだっピ", "みんなでハッピーになるっピ", "ハッピーが一番だっピ", "楽しいのが一番だっピ"],
+                correct: 0,
+                explanation: "「おはなしがハッピーを生むんだっピ」がやよたんのタコピー真似の決めポーズです！"
+            }
+        ];
+        
+        let currentQuestion = 0;
+        let selectedOption = null;
+        let gameEnded = false;
+        let continuousIconInterval = null;
+        
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            currentQuestion = 0;
+            gameEnded = false;
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionCounter').textContent = `問題 ${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('question').textContent = q.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option;
+                optionDiv.onclick = (event) => selectOption(index, optionDiv, event);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('nextButton').disabled = true;
+            document.getElementById('explanation').style.display = 'none';
+            selectedOption = null;
+        }
+        
+        function selectOption(index, element, event) {
+            if (selectedOption !== null || gameEnded) return;
+            
+            selectedOption = index;
+            const q = questions[currentQuestion];
+            
+            // すべてのオプションを無効化
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            // 正解・不正解の表示
+            options.forEach((opt, i) => {
+                if (i === q.correct) {
+                    opt.classList.add('correct');
+                } else if (i === index && index !== q.correct) {
+                    opt.classList.add('incorrect');
+                }
+            });
+            
+            // 正解の場合はやよたんアイコンを表示（クリック位置から）
+            if (index === q.correct) {
+                showFloatingIconFromClick(event);
+            }
+            
+            // 解説表示
+            document.getElementById('explanation').textContent = q.explanation;
+            document.getElementById('explanation').style.display = 'block';
+            
+            // 不正解の場合はゲームオーバー
+            if (index !== q.correct) {
+                setTimeout(() => {
+                    gameOver();
+                }, 2000);
+            } else {
+                // 正解の場合は次へボタン有効化
+                document.getElementById('nextButton').disabled = false;
+            }
+        }
+        
+        function showFloatingIcon() {
+            const icon = document.createElement('img');
+            icon.src = 'yayoi_icon.png';
+            icon.className = 'floating-icon';
+            icon.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+            icon.style.top = Math.random() * (window.innerHeight - 60) + 'px';
+            
+            document.body.appendChild(icon);
+            
+            setTimeout(() => {
+                if (document.body.contains(icon)) {
+                    document.body.removeChild(icon);
+                }
+            }, 2000);
+        }
+        
+        function showFloatingIconFromClick(event) {
+            const icon = document.createElement('img');
+            icon.src = 'yayoi_icon.png';
+            icon.className = 'floating-icon';
+            
+            // クリック位置から開始
+            const rect = event.target.getBoundingClientRect();
+            const clickX = event.clientX - rect.left + rect.left;
+            const clickY = event.clientY - rect.top + rect.top;
+            
+            icon.style.left = clickX - 30 + 'px';
+            icon.style.top = clickY - 30 + 'px';
+            
+            document.body.appendChild(icon);
+            
+            setTimeout(() => {
+                if (document.body.contains(icon)) {
+                    document.body.removeChild(icon);
+                }
+            }, 2000);
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showPerfectResult();
+            }
+        }
+        
+        function gameOver() {
+            gameEnded = true;
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'block';
+            
+            // やよいシンクロ率を計算
+            const syncRate = Math.round((currentQuestion / questions.length) * 100);
+            
+            const messages = [
+                `問題 ${currentQuestion + 1} で敗退...\n真のやよたんマスターへの道は険しいですね...`,
+                `あと ${questions.length - currentQuestion - 1} 問でした...\nもう一度挑戦してみませんか？`,
+                `やよたんのことをもっと知って、再挑戦しましょう！`
+            ];
+            
+            document.getElementById('gameOverMessage').textContent = messages[Math.floor(Math.random() * messages.length)];
+            
+            // シンクロ率とメッセージを表示
+            let syncMessage = '';
+            if (syncRate >= 80) {
+                syncMessage = 'かなり高い同調率です！あと少しで完全同調！';
+            } else if (syncRate >= 60) {
+                syncMessage = '良好な同調率です。やよたんとの絆を感じます。';
+            } else if (syncRate >= 40) {
+                syncMessage = 'まだまだ伸びしろがありますね。';
+            } else if (syncRate >= 20) {
+                syncMessage = 'やよたんのことをもっと知りましょう！';
+            } else {
+                syncMessage = '同調開始...やよたんとの距離はまだ遠いようです。';
+            }
+            
+            document.getElementById('syncRate').innerHTML = `
+                <div class="sync-rate-display">やよいシンクロ率: ${syncRate}%</div>
+                <div class="sync-message">${syncMessage}</div>
+            `;
+        }
+        
+        function showPerfectResult() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+            
+            // 最初に複数のやよたんアイコンを表示
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    showFloatingIcon();
+                }, i * 200);
+            }
+            
+            // 継続的にアイコンを表示し続ける
+            continuousIconInterval = setInterval(() => {
+                showFloatingIcon();
+            }, 800);
+            
+            // 勝利動画を再生開始
+            const victoryVideo = document.getElementById('victoryVideo');
+            if (victoryVideo) {
+                victoryVideo.currentTime = 0;
+                victoryVideo.play().catch(error => {
+                    console.log('動画の自動再生が失敗しました:', error);
+                    // ユーザーの操作を促すメッセージを表示することもできます
+                });
+            }
+        }
+        
+        function restartQuiz() {
+            // 継続的なアイコン表示を停止
+            if (continuousIconInterval) {
+                clearInterval(continuousIconInterval);
+                continuousIconInterval = null;
+            }
+            
+            // 勝利動画を停止
+            const victoryVideo = document.getElementById('victoryVideo');
+            if (victoryVideo) {
+                victoryVideo.pause();
+                victoryVideo.currentTime = 0;
+            }
+            
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+            
+            // オプションのスタイルをリセット
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'auto';
+                opt.classList.remove('correct', 'incorrect', 'selected');
+            });
+            
+            gameEnded = false;
+            currentQuestion = 0;
+            selectedOption = null;
+        }
+        
+        // 背景の星を生成
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // ページ読み込み時に星を生成
+        window.addEventListener('load', createStars);
+    </script>
+</body>
+</html>
